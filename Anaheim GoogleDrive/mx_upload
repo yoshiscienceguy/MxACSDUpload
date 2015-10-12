@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Launching...."
+sudo python /home/pi/MxPiDrive/GUI.py
