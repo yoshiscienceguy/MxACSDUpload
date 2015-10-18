@@ -143,42 +143,52 @@ class Handlers:
 
         m.UpdateMenu(GroupNames,Teams,True)
     def ChooseTeam(self):
-        if(int(GroupNames.curselection()[0]) == 0):
-            self.CreateNewFolder()
-        else:
-            self.TeamIds = gdrive.GetFolders(drive,self.TeacherIds[self.teacher])
-            Teams = GetList(self.TeamIds)
-            currentselection = Teams[int(GroupNames.curselection()[0])-1]
-            DisplayText.set("Current Selected Team: "+ currentselection+"\n"+"_"*30+"\n\nPlease Choose a Folder to Upload")
-            GroupNames.pack_forget ()
-            gns.pack_forget()
-            chooseGroupButton.pack_forget()
-            m.buttons.pack_forget()
-
-            m.packMenu(GroupFolders,gfs)
-            GroupFolders.pack()
-            
-            ChooseUploadFolder.pack()
-            m.buttons.pack(pady = 10)
-            currentTeamID = self.TeamIds[currentselection]
-            self.TeamFolder = gdrive.GetFolders (drive,currentTeamID)
-            InnerFolders = GetList(self.TeamFolder)
-
-            m.UpdateMenu(GroupFolders,InnerFolders)
-    def UploadButton(self):
-        Folders = GetList(self.TeamFolder)
-        Folder2Upload = self.TeamFolder[Folders[int(GroupFolders.curselection()[0])]]
-        path = tkFileDialog.askopenfilename()
         try:
-            parts = path.split("/")
-        except:
-            print("No File Selected")
-            return 0
-        FileName = parts[-1].split(".")[0]
+            if(int(GroupNames.curselection()[0]) == 0):
+                self.CreateNewFolder()
+            else:
+                self.TeamIds = gdrive.GetFolders(drive,self.TeacherIds[self.teacher])
+                Teams = GetList(self.TeamIds)
+                currentselection = Teams[int(GroupNames.curselection()[0])-1]
+                DisplayText.set("Current Selected Team: "+ currentselection+"\n"+"_"*30+"\n\nPlease Choose a Folder to Upload")
+                GroupNames.pack_forget ()
+                gns.pack_forget()
+                chooseGroupButton.pack_forget()
+                m.buttons.pack_forget()
 
-        #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
-        gdrive.UploadFile (drive,Folder2Upload,path,FileName)
-        DisplayText.set ('Upload \"'+ FileName+'\" Successful')
+                m.packMenu(GroupFolders,gfs)
+                GroupFolders.pack()
+                
+                ChooseUploadFolder.pack()
+                m.buttons.pack(pady = 10)
+                currentTeamID = self.TeamIds[currentselection]
+                self.TeamFolder = gdrive.GetFolders (drive,currentTeamID)
+                InnerFolders = GetList(self.TeamFolder)
+
+                m.UpdateMenu(GroupFolders,InnerFolders)
+        except:
+           print("Choose a Team")     
+    def UploadButton(self):
+        try:
+            Folders = GetList(self.TeamFolder)
+            Folder2Upload = self.TeamFolder[Folders[int(GroupFolders.curselection()[0])]]
+            try:
+                path = tkFileDialog.askopenfilename()
+            
+                parts = path.split("/")
+                FileName = parts[-1].split(".")[0]
+
+                #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
+                gdrive.UploadFile (drive,Folder2Upload,path,FileName)
+                print('Upload \"'+ FileName+'\" Successful')
+                DisplayText.set ('Upload \"'+ FileName+'\" Successful')
+            except:
+                print("No File Selected")
+                
+        except:
+            print("Please Select a Folder")
+
+
         
 def GetList(tup,ex = []):
     newlist = tup.keys()
