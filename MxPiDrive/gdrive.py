@@ -9,7 +9,7 @@ TechID = "16grOWcXkxrjt1JundUKUQoGlPZigPBsOzExyKozcpD8"
 def Connect():
     print("Authenticating")
     gauth = GoogleAuth()
-    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    gauth.LoadCredentialsFile("./mycreds.txt")
 
     if( gauth.credentials is None):
         gauth.LocalWebserverAuth()
@@ -17,7 +17,7 @@ def Connect():
         gauth.Refresh()
     else:
         gauth.Authorize()
-    gauth.SaveCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    gauth.SaveCredentialsFile("./mycreds.txt")
 
     print("Done Authenticating")
 
