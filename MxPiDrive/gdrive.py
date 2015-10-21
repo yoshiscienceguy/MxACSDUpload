@@ -9,29 +9,61 @@ TechID = "16grOWcXkxrjt1JundUKUQoGlPZigPBsOzExyKozcpD8"
 def Connect():
     print("Authenticating")
     gauth = GoogleAuth()
-    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
 
+    try:
+        gauth.LoadCredentialsFile("./mycreds.txt")
+    except:
+        gauth.LoadCredentialsFile("home/pi/Mx/MxPiDrive/mycreds.txt")
+        
     if( gauth.credentials is None):
         gauth.LocalWebserverAuth()
     elif( gauth.access_token_expired):
         gauth.Refresh()
     else:
         gauth.Authorize()
-    gauth.SaveCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
-
+        
+    try:
+        gauth.LoadCredentialsFile("./mycreds.txt")
+    except:
+        gauth.LoadCredentialsFile("home/pi/Mx/MxPiDrive/mycreds.txt")
+        
     print("Done Authenticating")
 
     drive = GoogleDrive(gauth)
     return drive
-def CopyTechnicalReport(drive,parent):
+def CopyTechnicalReport(drive,parent,name = "Technical Report"):
     drive.auth.service.files().copy(fileId = TechID, body={"parents":[{"kind": "drive#fileLink",
-                                                                       "id": parent}], 'title': "Technical Report"}).execute()
+                                                                   "id": parent}], 'title': name}).execute()
+def GetFiles(drive,ParentId = None):
+    if(not ParentId):
+        ParentId = SFID
+    file_list = drive.ListFile({"q":"'"+ParentId+"' in parents and trashed = false"}).GetList()
+
+    ViewTime = None
+    name = None
+    for file1 in file_list:
+        if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
+            if(ViewTime == None):
+                ViewTime = file1['lastViewedByMeDate']
+                name = file1['title']
+            else:
+                if(ViewTime < file1['lastViewedByMeDate']):
+                    ViewTime = file1['lastViewedByMeDate']
+                    name = file1['title']
+                    
+    for file1 in file_list:
+        if(file1['title'] == name):
+            name = file1['alternateLink']
+    #Files[file1["title"]] = file1["alternateLink"]
+                    
+    return name
 def GetFolders(drive,ParentId = None):
     if(not ParentId):
         ParentId = SFID
     file_list = drive.ListFile({"q":"'"+ParentId+"' in parents and trashed = false"}).GetList()
     Folders = {}
     for file1 in file_list:
+        #print(file1['alternateLink'])
         if(file1['mimeType'] == "application/vnd.google-apps.folder"):
             Folders[file1["title"]] = file1["id"]
     return Folders

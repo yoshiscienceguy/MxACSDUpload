@@ -3,6 +3,19 @@ import tkFileDialog
 import gdrive
 import time
 import urllib2
+import webbrowser
+
+
+UNITS = [
+    ("Unit 1: Hardware Terminology", "Hardware Terminology"),
+    ("Unit 2: Blink Blink", "Blink Blink"),
+    ("Unit 3: Google Drive", "Google Drive"),
+    ("Unit 4: Ho Ho Holiday Lights", "Ho Ho Holiday Lights"),
+    ("Unit 5: Rock Paper Scissors", "Rock Paper Scissors"),
+    ("Unit 6: Dice Game", "Dice Game"),
+    ("Unit 7: Simon Says", "Simon Says"),
+    ("Unit 8: Home Alarm System", "Home Alarm System"),]
+
 
 try:
     response = urllib2.urlopen("http://www.google.com",timeout=1)
@@ -36,11 +49,17 @@ class Menu():
 
         return submit
     
-    def drawCheckButton(self,frame,toSay,functionName):
-        followVariable = tk.IntVar()
-        CheckButton = tk.Checkbutton(frame,text = toSay,variable = followVariable,command = eval(functionName))
-        CheckButton.pack()
-        return CheckButton , followVariable
+    def drawRadioButtons(self,frame):
+        v = tk.StringVar()
+
+        Buttons = []
+        for texts, unit in UNITS:
+            rb = tk.Radiobutton(frame, text = texts, variable = v, value = unit)
+            rb.pack(anchor = tk.W)
+            rb.deselect()
+            Buttons.append(rb)
+        v.set("Hardware Terminology")
+        return v, Buttons
     def drawMenu(self,frame,listDisplay,NewOption = False):
 
         scrollbar = tk.Scrollbar(frame,orient = tk.VERTICAL)
@@ -96,12 +115,18 @@ class Handlers:
 
         self.TeamIds = gdrive.GetFolders(drive,self.TeacherIds[self.teacher])
         Teams = GetList(self.TeamIds)
-        GroupFolders.pack_forget()
-        gfs.pack_forget()
-        ChooseUploadFolder.pack_forget()
-        m.buttons.pack_forget()
+        try:
+            for radio in self.UnitChoices:
+                radio.pack_forget()
+        except:
+            print("Radio Buttons don't Exist")
+            pass
         
-        m.packMenu(GroupNames,gns)
+        ChooseUploadFolder.pack_forget()
+        TechnicalReport.pack_forget()
+        m.buttons.pack_forget()
+        m.menu.pack()
+        #m.packMenu(GroupNames,gns)
         GroupNames.pack()
         DisplayText.set("Please Choose Your Teacher\n"+"_"*30+"\n\nChoose Your Team \nor Create a New One")
         m.UpdateMenu(GroupNames,Teams,True)
@@ -150,33 +175,49 @@ class Handlers:
                 self.TeamIds = gdrive.GetFolders(drive,self.TeacherIds[self.teacher])
                 Teams = GetList(self.TeamIds)
                 currentselection = Teams[int(GroupNames.curselection()[0])-1]
-                DisplayText.set("Current Selected Team: "+ currentselection+"\n"+"_"*30+"\n\nPlease Choose a Folder to Upload")
+                DisplayText.set("Current Selected Team: "+ currentselection)
                 GroupNames.pack_forget ()
                 gns.pack_forget()
                 chooseGroupButton.pack_forget()
                 m.buttons.pack_forget()
 
-                m.packMenu(GroupFolders,gfs)
-                GroupFolders.pack()
-                
+                #m.packMenu(GroupFolders,gfs)
+                #GroupFolders.pack()
+                #m.menu.pack_forget ()
                 ChooseUploadFolder.pack()
+                TechnicalReport.pack()
+
+                self.Unit, self.UnitChoices = m.drawRadioButtons(m.menu);
+
                 m.buttons.pack(pady = 10)
                 currentTeamID = self.TeamIds[currentselection]
                 self.TeamFolder = gdrive.GetFolders (drive,currentTeamID)
                 InnerFolders = GetList(self.TeamFolder)
 
-                m.UpdateMenu(GroupFolders,InnerFolders)
+                
         except:
-           print("Choose a Team")     
+           print("Choose a Team")
+    def TechnicalReport(self):
+        
+        ProjectName = self.Unit.get() + " Technical Report"
+
+
+        gdrive.CopyTechnicalReport (drive,self.TeamFolder["Documents"],ProjectName)
+        url = gdrive.GetFiles(drive,self.TeamFolder["Documents"])
+        
+        webbrowser.open(url,new = 2)
     def UploadButton(self):
         try:
-            Folders = GetList(self.TeamFolder)
-            Folder2Upload = self.TeamFolder[Folders[int(GroupFolders.curselection()[0])]]
+
+            #Folder2Upload = self.TeamFolder[Folders[int(GroupFolders.curselection()[0])]]
+            Folder2Upload = self.TeamFolder['Code']
             try:
                 path = tkFileDialog.askopenfilename()
             
                 parts = path.split("/")
                 FileName = parts[-1].split(".")[0]
+                FileName +=  " " + self.Unit.get()
+                print(FileName)
 
                 #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
                 gdrive.UploadFile (drive,Folder2Upload,path,FileName)
@@ -210,8 +251,12 @@ TeachersObj,TeachersVar = m.drawDropDown(m.master,"h.TeacherHandler",[""])
 DisplayText = m.drawMessage(m.master,"Please Choose a School")
 GroupNames,gns = m.drawMenu(m.menu,[],True)
 chooseGroupButton = m.drawButton(m.buttons,"Choose","h.ChooseTeam")
-GroupFolders, gfs= m.drawMenu(m.menu,[],False)
-ChooseUploadFolder = m.drawButton(m.buttons,"Upload","h.UploadButton")
+
+
+
+
+TechnicalReport = m.drawButton(m.buttons,"Technical Report", "h.TechnicalReport")
+ChooseUploadFolder = m.drawButton(m.buttons,"Upload Code","h.UploadButton")
 
 m.menu.pack()
 m.buttons.pack ()
