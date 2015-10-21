@@ -10,10 +10,8 @@ def Connect():
     print("Authenticating")
     gauth = GoogleAuth()
 
-    try:
-        gauth.LoadCredentialsFile("./mycreds.txt")
-    except:
-        gauth.LoadCredentialsFile("home/pi/Mx/MxPiDrive/mycreds.txt")
+
+    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
         
     if( gauth.credentials is None):
         gauth.LocalWebserverAuth()
@@ -21,11 +19,9 @@ def Connect():
         gauth.Refresh()
     else:
         gauth.Authorize()
-        
-    try:
-        gauth.LoadCredentialsFile("./mycreds.txt")
-    except:
-        gauth.LoadCredentialsFile("home/pi/Mx/MxPiDrive/mycreds.txt")
+           
+
+    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
         
     print("Done Authenticating")
 
