@@ -167,6 +167,8 @@ class Handlers:
         Teams = GetList(self.TeamFolder)
 
         m.UpdateMenu(GroupNames,Teams,True)
+    def destroy(self):
+        self.slave.destroy()
     def ChooseTeam(self):
         try:
             if(int(GroupNames.curselection()[0]) == 0):
@@ -196,7 +198,17 @@ class Handlers:
 
                 
         except:
-           print("Choose a Team")
+            self.slave = slave = tk.Tk()
+            newFrame = tk.Frame(self.slave, width = 200)
+            self.slave.title("Error")
+            T = tk.Label(self.slave,text = "Please Choose a Team")
+            T.pack(padx = (10,10),pady = (10,10))
+
+    
+            self.Createbutton = m.drawButton(newFrame,"Ok",'h.destroy')
+            self.Createbutton.pack(pady = (0,10))
+            newFrame.pack()
+            
     def TechnicalReport(self):
         
         ProjectName = self.Unit.get() + " Technical Report"
@@ -212,8 +224,15 @@ class Handlers:
             #Folder2Upload = self.TeamFolder[Folders[int(GroupFolders.curselection()[0])]]
             Folder2Upload = self.TeamFolder['Code']
             try:
-                path = tkFileDialog.askopenfilename()
-            
+                options = {}
+                options['defaultextension'] = '.py'
+                options['filetypes'] = [('Python Files', '.py'),('All Files', '.*')]
+                options['initialdir'] = '/home/pi'
+                options['parent'] = m.buttons
+                options['title'] = 'Select file to Upload'
+                
+                path = tkFileDialog.askopenfilename(**options)
+
                 parts = path.split("/")
                 FileName = parts[-1].split(".")[0]
                 FileName +=  " " + self.Unit.get()
