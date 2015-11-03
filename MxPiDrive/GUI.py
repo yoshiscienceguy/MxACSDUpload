@@ -119,7 +119,7 @@ class Handlers:
             for radio in self.UnitChoices:
                 radio.pack_forget()
         except:
-            print("Radio Buttons don't Exist")
+           # print("Radio Buttons don't Exist")
             pass
         
         ChooseUploadFolder.pack_forget()

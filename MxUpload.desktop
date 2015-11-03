@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MxUpload
+Comment=My application which does this
+Icon=/home/pi/Mx/logo.ico
+Exec= python /home/pi/Mx/MxPiDrive/GUI.py
+Type=Application
+Encoding=UTF-8
+Terminal=false
+Categories=None;

@@ -1,7 +1,7 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
-import time
+import platform
 
 SFID = "0B6OVPYHQgk9NYW43bzhQMmE1cUU"
 TechID = "16grOWcXkxrjt1JundUKUQoGlPZigPBsOzExyKozcpD8"
@@ -10,8 +10,12 @@ def Connect():
     print("Authenticating")
     gauth = GoogleAuth()
 
-
-    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    os = platform.platform().split('-')[0]
+    print(os)
+    if(os != "Windows"):
+        gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    else:
+        gauth.LoadCredentialsFile("./mycreds.txt")
         
     if( gauth.credentials is None):
         gauth.LocalWebserverAuth()
@@ -21,7 +25,10 @@ def Connect():
         gauth.Authorize()
            
 
-    gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    if(os != "Windows"):
+        gauth.LoadCredentialsFile("./Mx/MxPiDrive/mycreds.txt")
+    else:
+        gauth.LoadCredentialsFile("./mycreds.txt")
         
     print("Done Authenticating")
 
