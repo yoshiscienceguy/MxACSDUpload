@@ -1,7 +1,7 @@
 import Tkinter as tk
 import tkFileDialog
 import gdrive
-import time
+import time, platform
 import urllib2
 import webbrowser
 
@@ -38,7 +38,8 @@ class Menu():
         AssociatedVariable.trace("w",eval(functionName))
         DropDown = apply(tk.OptionMenu,(frame,AssociatedVariable)+tuple(listDisplay))
         if(Default):
-            AssociatedVariable.set(listDisplay[0])
+            AssociatedVariable.set("Choose")
+
         DropDown.pack(pady=(10,0))
 
         return DropDown , AssociatedVariable
@@ -162,7 +163,7 @@ class Handlers:
         self.slave.destroy()
         DocId = gdrive.CreateFolder(drive,"Documents",newid)
         CodeId = gdrive.CreateFolder(drive,"Code",newid)
-        gdrive.CopyTechnicalReport(drive,DocId)
+        #gdrive.CopyTechnicalReport(drive,DocId)
         self.TeamFolder = gdrive.GetFolders (drive,self.TeacherIds[self.teacher])
         Teams = GetList(self.TeamFolder)
 
@@ -186,8 +187,12 @@ class Handlers:
                 #m.packMenu(GroupFolders,gfs)
                 #GroupFolders.pack()
                 #m.menu.pack_forget ()
+                os = platform.platform().split('-')[0]
+                if(os == "Windows"):
+                   TechnicalReport.pack() 
+
                 ChooseUploadFolder.pack()
-                TechnicalReport.pack()
+                    
 
                 self.Unit, self.UnitChoices = m.drawRadioButtons(m.menu);
 
@@ -215,7 +220,7 @@ class Handlers:
 
 
         gdrive.CopyTechnicalReport (drive,self.TeamFolder["Documents"],ProjectName)
-        url = gdrive.GetFiles(drive,self.TeamFolder["Documents"])
+        url = gdrive.GetFileURL(drive,ProjectName,self.TeamFolder["Documents"])
         
         webbrowser.open(url,new = 2)
     def UploadButton(self):
@@ -235,8 +240,8 @@ class Handlers:
 
                 parts = path.split("/")
                 FileName = parts[-1].split(".")[0]
-                FileName +=  " " + self.Unit.get()
-                print(FileName)
+                FileName +=  " (" + self.Unit.get() + ").py"
+
 
                 #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
                 gdrive.UploadFile (drive,Folder2Upload,path,FileName)

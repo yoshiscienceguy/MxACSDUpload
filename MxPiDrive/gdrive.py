@@ -35,31 +35,29 @@ def Connect():
     drive = GoogleDrive(gauth)
     return drive
 def CopyTechnicalReport(drive,parent,name = "Technical Report"):
-    drive.auth.service.files().copy(fileId = TechID, body={"parents":[{"kind": "drive#fileLink",
+    file_list = drive.ListFile({"q":"'"+parent+"' in parents and trashed = false"}).GetList()
+    found = False
+    for file1 in file_list:
+        if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
+            if(file1['title'] == name):
+                found = True
+                    
+    if(not found):
+        drive.auth.service.files().copy(fileId = TechID, body={"parents":[{"kind": "drive#fileLink",
                                                                    "id": parent}], 'title': name}).execute()
-def GetFiles(drive,ParentId = None):
+   
+def GetFileURL(drive,ProjectName,ParentId = None):
     if(not ParentId):
         ParentId = SFID
     file_list = drive.ListFile({"q":"'"+ParentId+"' in parents and trashed = false"}).GetList()
 
-    ViewTime = None
-    name = None
+
     for file1 in file_list:
         if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
-            if(ViewTime == None):
-                ViewTime = file1['lastViewedByMeDate']
-                name = file1['title']
-            else:
-                if(ViewTime < file1['lastViewedByMeDate']):
-                    ViewTime = file1['lastViewedByMeDate']
-                    name = file1['title']
-                    
-    for file1 in file_list:
-        if(file1['title'] == name):
-            name = file1['alternateLink']
-    #Files[file1["title"]] = file1["alternateLink"]
-                    
-    return name
+            if(file1['title'] == ProjectName):
+                return file1['alternateLink']
+
+
 def GetFolders(drive,ParentId = None):
     if(not ParentId):
         ParentId = SFID
