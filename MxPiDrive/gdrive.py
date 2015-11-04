@@ -66,6 +66,7 @@ def GetFileID(drive,FileName,ParentId = None):
         if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
             if(file1['title'] == FileName):
                 return file1['id']
+    return None
 def GetFiles(drive,ParentId = None):
     if(not ParentId):
         ParentId = SFID
@@ -90,8 +91,11 @@ def DownloadFile(drive,FileId,FileName):
     file1 = drive.CreateFile({'id':FileId})
     file1.GetContentFile(FileName)
 def UploadFile(drive,ParentId,FilePath,FileName):
-
-    file2Upload = drive.CreateFile({"parents":[{"id" : ParentId}]})
+    Id = GetFileID(drive,FileName,ParentId)
+    if(Id ==None):
+        file2Upload = drive.CreateFile({"parents":[{"id" : ParentId}]})
+    else:
+        file2Upload = drive.CreateFile({'id':Id})
     file2Upload.SetContentFile(FilePath)
     file2Upload["title"] = FileName
     file2Upload.Upload()

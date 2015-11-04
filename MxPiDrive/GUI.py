@@ -238,9 +238,15 @@ class Handlers:
                 
                 path = tkFileDialog.askopenfilename(**options)
 
+                
                 parts = path.split("/")
                 FileName = parts[-1].split(".")[0]
-                FileName +=  " (" + self.Unit.get() + ").py"
+                print(FileName)
+                print(gdrive.GetFileID(drive,FileName,Folder2Upload))
+                if(gdrive.GetFileID(drive,FileName,Folder2Upload) == None):
+                    FileName +=  " (" + self.Unit.get() + ").py"
+                else:
+                    FileName += ".py"
 
 
                 #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
