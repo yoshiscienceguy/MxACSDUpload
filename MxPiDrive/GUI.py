@@ -274,8 +274,11 @@ class Handlers:
                 break
         if(FileID and FileName):
             gdrive.DownloadFile(drive,FileID,FileName)
-
-            DesktopPath = os.path.expanduser("~")+"\Desktop\\"
+            osType = platform.platform().split("-")[0]
+            if(os!= "Windows"):
+                DesktopPath= "/home/pi/Desktop/"
+            else:
+                DesktopPath = os.path.expanduser("~")+"\Desktop\\"
             try:
                 os.rename(FileName,DesktopPath+FileName)
             except:
