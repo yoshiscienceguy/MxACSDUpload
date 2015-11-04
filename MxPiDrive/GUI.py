@@ -1,10 +1,7 @@
 import Tkinter as tk
 import tkFileDialog
 import gdrive
-import time, platform
-import urllib2
-import webbrowser
-
+import time, platform, os, urllib2, webbrowser
 
 UNITS = [
     ("Unit 1: Hardware Terminology", "Hardware Terminology"),
@@ -100,6 +97,7 @@ class Menu():
         
         listbox.pack(side = tk.LEFT, fill = tk.BOTH, expand = 1)
         scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+
 class Handlers:
     def __init__(self):
         self.school = ""
@@ -122,7 +120,7 @@ class Handlers:
         except:
            # print("Radio Buttons don't Exist")
             pass
-        
+        ChooseDownloadCode.pack_forget()
         ChooseUploadFolder.pack_forget()
         TechnicalReport.pack_forget()
         m.buttons.pack_forget()
@@ -168,6 +166,17 @@ class Handlers:
         Teams = GetList(self.TeamFolder)
 
         m.UpdateMenu(GroupNames,Teams,True)
+    def CreateAlert(self,message):
+        self.slave = slave = tk.Tk()
+        newFrame = tk.Frame(self.slave, width = 200)
+        self.slave.title("Alert")
+        T = tk.Label(self.slave,text = message)
+        T.pack(padx = (10,10),pady = (10,10))
+
+
+        self.Createbutton = m.drawButton(newFrame,"Ok",'h.destroy')
+        self.Createbutton.pack(pady = (0,10))
+        newFrame.pack()
     def destroy(self):
         self.slave.destroy()
     def ChooseTeam(self):
@@ -192,7 +201,7 @@ class Handlers:
                    TechnicalReport.pack() 
 
                 ChooseUploadFolder.pack()
-                    
+                ChooseDownloadCode.pack()
 
                 self.Unit, self.UnitChoices = m.drawRadioButtons(m.menu);
 
@@ -203,16 +212,7 @@ class Handlers:
 
                 
         except:
-            self.slave = slave = tk.Tk()
-            newFrame = tk.Frame(self.slave, width = 200)
-            self.slave.title("Error")
-            T = tk.Label(self.slave,text = "Please Choose a Team")
-            T.pack(padx = (10,10),pady = (10,10))
-
-    
-            self.Createbutton = m.drawButton(newFrame,"Ok",'h.destroy')
-            self.Createbutton.pack(pady = (0,10))
-            newFrame.pack()
+            self.CreateAlert("Please Choose a Team")
             
     def TechnicalReport(self):
         
@@ -246,13 +246,40 @@ class Handlers:
                 #path = "C:\Users\Fernando\Desktop\Anaheim GoogleDrive\test.txt"
                 gdrive.UploadFile (drive,Folder2Upload,path,FileName)
                 print('Upload \"'+ FileName+'\" Successful')
-                DisplayText.set ('Upload \"'+ FileName+'\" Successful')
+                self.CreateAlert('Upload \"'+ FileName+'\" Successful')
+                os.remove(path)
             except:
-                print("No File Selected")
+                self.CreateAlert("No File Selected")
                 
         except:
-            print("Please Select a Folder")
+            self.CreateAlert("Please Select a Folder")
 
+
+    def DownloadButton(self):
+        Folder2Download = self.TeamFolder['Code']
+        path = '/home/pi'
+        Files = gdrive.GetFiles(drive,Folder2Download)
+        FileID = None
+        FileName = None
+        for file1 in Files:
+            if(self.Unit.get() in file1):
+                FileName =file1
+                FileID = Files[file1]
+                break
+        if(FileID and FileName):
+            gdrive.DownloadFile(drive,FileID,FileName)
+
+            DesktopPath = os.path.expanduser("~")+"\Desktop\\"
+            try:
+                os.rename(FileName,DesktopPath+FileName)
+            except:
+                os.remove(DesktopPath+FileName)
+                os.rename(FileName,DesktopPath+FileName)
+            print('Download \"'+ FileName+'\" Successful')
+            self.CreateAlert("File Downloaded! Look for it on Desktop")
+                
+        else:
+            self.CreateAlert("File Does not Exist")
 
         
 def GetList(tup,ex = []):
@@ -281,6 +308,7 @@ chooseGroupButton = m.drawButton(m.buttons,"Choose","h.ChooseTeam")
 
 TechnicalReport = m.drawButton(m.buttons,"Technical Report", "h.TechnicalReport")
 ChooseUploadFolder = m.drawButton(m.buttons,"Upload Code","h.UploadButton")
+ChooseDownloadCode = m.drawButton(m.buttons,"Download Code", "h.DownloadButton")
 
 m.menu.pack()
 m.buttons.pack ()

@@ -56,8 +56,26 @@ def GetFileURL(drive,ProjectName,ParentId = None):
         if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
             if(file1['title'] == ProjectName):
                 return file1['alternateLink']
+def GetFileID(drive,FileName,ParentId = None):
+    if(not ParentId):
+        ParentId = SFID
+    file_list = drive.ListFile({"q":"'"+ParentId+"' in parents and trashed = false"}).GetList()
 
 
+    for file1 in file_list:
+        if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
+            if(file1['title'] == FileName):
+                return file1['id']
+def GetFiles(drive,ParentId = None):
+    if(not ParentId):
+        ParentId = SFID
+    file_list = drive.ListFile({"q":"'"+ParentId+"' in parents and trashed = false"}).GetList()
+    Files = {}
+    for file1 in file_list:
+        #print(file1['alternateLink'])
+        if(not file1['mimeType'] == "application/vnd.google-apps.folder"):
+            Files[file1["title"]] = file1["id"]
+    return Files   
 def GetFolders(drive,ParentId = None):
     if(not ParentId):
         ParentId = SFID
@@ -68,6 +86,9 @@ def GetFolders(drive,ParentId = None):
         if(file1['mimeType'] == "application/vnd.google-apps.folder"):
             Folders[file1["title"]] = file1["id"]
     return Folders
+def DownloadFile(drive,FileId,FileName):
+    file1 = drive.CreateFile({'id':FileId})
+    file1.GetContentFile(FileName)
 def UploadFile(drive,ParentId,FilePath,FileName):
 
     file2Upload = drive.CreateFile({"parents":[{"id" : ParentId}]})
