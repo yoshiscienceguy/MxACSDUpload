@@ -234,7 +234,7 @@ class Handlers:
                 options['filetypes'] = [('Python Files', '.py'),('All Files', '.*')]
                 osType = platform.platform().split("-")[0]
                 if(osType!= "Windows"):
-                    options['initialdir'] = '/home/pi'
+                    options['initialdir'] = '/home/pi/Desktop'
                 else:
                     options['initialdir'] = os.path.expanduser("~")+"\\Desktop\\"
                 
