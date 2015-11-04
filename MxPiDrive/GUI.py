@@ -232,7 +232,14 @@ class Handlers:
                 options = {}
                 options['defaultextension'] = '.py'
                 options['filetypes'] = [('Python Files', '.py'),('All Files', '.*')]
-                options['initialdir'] = '/home/pi'
+                osType = platform.platform().split("-")[0]
+                if(osType!= "Windows"):
+                    options['initialdir'] = '/home/pi'
+                else:
+                    options['initialdir'] = os.path.expanduser("~")+"\\Desktop\\"
+                
+                
+
                 options['parent'] = m.buttons
                 options['title'] = 'Select file to Upload'
                 
@@ -241,8 +248,7 @@ class Handlers:
                 
                 parts = path.split("/")
                 FileName = parts[-1].split(".")[0]
-                print(FileName)
-                print(gdrive.GetFileID(drive,FileName,Folder2Upload))
+
                 if(gdrive.GetFileID(drive,FileName + ".py",Folder2Upload) == None):
                     FileName +=  " (" + self.Unit.get() + ").py"
                 else:
@@ -279,7 +285,7 @@ class Handlers:
                 DesktopPath= "/home/pi/Desktop/"
             else:
                 DesktopPath = os.path.expanduser("~")+"\Desktop\\"
-            print(DesktopPath)
+
             try:
                 os.rename(FileName,DesktopPath+FileName)
             except:
