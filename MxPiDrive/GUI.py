@@ -243,7 +243,7 @@ class Handlers:
                 FileName = parts[-1].split(".")[0]
                 print(FileName)
                 print(gdrive.GetFileID(drive,FileName,Folder2Upload))
-                if(gdrive.GetFileID(drive,FileName,Folder2Upload) == None):
+                if(gdrive.GetFileID(drive,FileName + ".py",Folder2Upload) == None):
                     FileName +=  " (" + self.Unit.get() + ").py"
                 else:
                     FileName += ".py"
