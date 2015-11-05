@@ -214,15 +214,15 @@ class Handlers:
         except:
             self.CreateAlert("Please Choose a Team")
             
-    def TechnicalReport(self):
+    def TechnicalReport(self,silent = False):
         
         ProjectName = self.Unit.get() + " Technical Report"
 
 
         gdrive.CopyTechnicalReport (drive,self.TeamFolder["Documents"],ProjectName)
         url = gdrive.GetFileURL(drive,ProjectName,self.TeamFolder["Documents"])
-        
-        webbrowser.open(url,new = 2)
+        if(not silent):
+            webbrowser.open(url,new = 2)
     def UploadButton(self):
         try:
 
@@ -260,6 +260,7 @@ class Handlers:
                 print('Upload \"'+ FileName+'\" Successful')
                 self.CreateAlert('Upload \"'+ FileName+'\" Successful')
                 os.remove(path)
+                self.TechnicalReport(True)
             except:
                 self.CreateAlert("No File Selected")
                 
