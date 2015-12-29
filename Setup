@@ -3,5 +3,4 @@ echo "Setting Up..."
 git clone https://github.com/yoshiscienceguy/MxACSDUpload.git ./Mx
 cd ./Mx
 
-sudo mv MxUpload /home/pi/MxUpload
 sudo mv MxUpload.desktop /home/pi/Desktop/MxUpload.desktop
