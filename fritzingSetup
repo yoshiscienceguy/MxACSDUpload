@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "This might take a while"
+sudo apt-get install update
+sudo apt-get install fritzing -y
+sudo apt-get install libqt4-sql-sqlite
+sudo rm -r /usr/share/fritzing
+sudo git clone https://github.com/yoshiscienceguy/FritzingRaspberryPi.git /usr/share/fritzing
+sudo mv /usr/share/fritzing/fritzing.desktop /home/pi/Desktop/fritzing.desktop
+sudo chmod 777 /usr/share/fritzing/Fritzing
